@@ -1,0 +1,206 @@
+:root{--bg:#f4f6f8;--card:#ffffff;--accent:#2563eb;--muted:#6b7280}
+*{box-sizing:border-box;font-family:Inter, system-ui, Arial;}
+body{margin:0;background:var(--bg);color:#111}
+header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+header h1{margin:0;font-size:18px}
+.controls{display:flex;gap:8px;align-items:center}
+.controls input{padding:8px;border-radius:6px;border:1px solid #e5e7eb}
+.controls button{padding:8px 12px;background:var(--accent);color:#fff;border:none;border-radius:6px;cursor:pointer}
+
+#board{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:20px;align-items:start}
+.column{background:var(--card);padding:12px;border-radius:8px;min-height:320px;box-shadow:0 2px 6px rgba(16,24,40,0.04)}
+.col-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.col-head h3{margin:0;font-size:16px}
+.card{background:#f8fafc;padding:10px;border-radius:8px;margin-bottom:8px;cursor:grab;border-left:4px solid #e5e7eb}
+.card .meta{font-size:12px;color:var(--muted);margin-top:6px}
+.button-small{padding:6px 8px;border-radius:6px;border:none;background:#e6eefc;color:var(--accent);cursor:pointer;font-weight:600}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center}
+.hidden{display:none}
+.modal-content{background:#fff;padding:18px;border-radius:10px;min-width:320px}
+.modal-content label{display:block;margin-bottom:8px;font-size:13px}
+.modal-content input,.modal-content textarea,.modal-content select{width:100%;padding:8px;border-radius:6px;border:1px solid #e5e7eb}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}
+.modal-actions button{padding:8px 10px;border-radius:6px;border:none;cursor:pointer}
+#deleteBtn{background:#ef4444;color:#fff}
+#saveBtn{background:var(--accent);color:#fff}
+
+/* Dragging visuals & cursor fixes */
+.card {
+  cursor: grab;           /* default */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.card:active,
+.sortable-chosen {
+  cursor: grabbing;
+}
+
+/* ghost item while dragging */
+.sortable-ghost {
+  opacity: 0.45 !important;
+  transform: scale(0.98);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+}
+
+/* optional class for item being dragged */
+.sortable-dragging {
+  opacity: 0.9;
+}
+
+/* ensure drop containers are receptive */
+.list {
+  min-height: 48px; /* ensures there is space to drop into empty columns */
+  padding-bottom: 8px;
+}
+
+/* Make columns allow pointer events (in case some overlay blocked them) */
+.column, .list { pointer-events: auto; }
+
+/* Make columns easier to drop into */
+.list {
+  min-height: 140px;      /* taller target to accept drops anywhere */
+  padding: 14px;          /* give inner space so pointer is inside the drop area */
+  border-radius: 8px;
+  transition: background .12s ease;
+}
+
+/* Visual hint for when dragging over a column */
+.column.drag-over {
+  background: rgba(37,99,235,0.04);
+  box-shadow: inset 0 0 0 2px rgba(37,99,235,0.04);
+}
+
+/* Larger invisible drop zone for empty columns */
+.list::after {
+  content: "";
+  display: block;
+  height: 36px;
+  pointer-events: none;
+}
+
+/* Dragging helper & cursor fixes */
+.sortable-ghost { opacity: 0.45 !important; transform: scale(0.98); box-shadow: 0 6px 18px rgba(0,0,0,0.12); pointer-events: none; }
+.sortable-dragging { opacity: 0.95; pointer-events: none; }
+.card { cursor: grab !important; user-select: none; -webkit-user-select: none; -moz-user-select: none; }
+.card:active, .sortable-chosen { cursor: grabbing !important; }
+
+.list { min-height: 160px; padding: 12px; pointer-events: auto; }
+.sortable-ghost, .sortable-dragging { pointer-events: none !important; }
+.column.drag-over { background: rgba(37,99,235,0.03); }
+.modal.hidden { display:none !important; pointer-events: none !important; }
+
+/* ===== Drop highlight animation (polish #1) ===== */
+
+/* subtle glow when dragging over a column */
+.column.drag-over {
+  background: rgba(37,99,235,0.04);
+  box-shadow: 0 8px 20px rgba(37,99,235,0.06);
+  transform: translateY(-2px);
+  transition: background .12s ease, box-shadow .12s ease, transform .12s ease;
+}
+
+/* small animation when drag starts for whole board (optional) */
+.board-dragging .column {
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+
+/* keep the glow soft on mobile as well */
+@media (hover: none) {
+  .column.drag-over { transform: none; box-shadow: 0 6px 14px rgba(37,99,235,0.04); }
+}
+
+/* ===== Toast notifications (polish #3) ===== */
+.toast-wrap {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+  width: 320px;
+}
+
+.toast {
+  pointer-events: auto;
+  background: #111827;
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(2,6,23,0.2);
+  font-size: 13px;
+  opacity: 0;
+  transform: translateY(-8px) scale(.99);
+  transition: opacity .18s ease, transform .18s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.toast.success { background: linear-gradient(90deg,#10b981,#059669); color: #fff; }
+.toast.error   { background: linear-gradient(90deg,#ef4444,#dc2626); color: #fff; }
+.toast.info    { background: linear-gradient(90deg,#3b82f6,#2563eb); color: #fff; }
+
+.toast .icon {
+  width: 18px; height: 18px; flex: 0 0 18px; display:inline-block;
+  opacity: .95;
+}
+.toast .msg { flex: 1; }
+
+/* ===== Priority badges (polish #4) ===== */
+
+.card-head { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.badge {
+  font-size:11px;
+  font-weight:700;
+  padding:4px 8px;
+  border-radius:999px;
+  color:#fff;
+  letter-spacing:0.4px;
+  flex:0 0 auto;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* priority colors */
+.badge-high { background: linear-gradient(90deg,#ef4444,#dc2626); }   /* red */
+.badge-medium { background: linear-gradient(90deg,#f59e0b,#d97706); } /* amber */
+.badge-low { background: linear-gradient(90deg,#10b981,#059669); }    /* green */
+
+/* make title flow next to badge */
+.card .title { font-weight:600; font-size:14px; }
+
+/* slightly reduce meta size so badge stands out */
+.card .meta { font-size:12px; color:var(--muted); margin-top:2px; }
+
+/* ===== Mobile-friendly adjustments (polish #5) ===== */
+
+/* make cards easier to tap and drag on touch devices */
+@media (pointer: coarse) {
+  .card { padding: 14px !important; font-size: 15px !important; border-left-width:6px !important; }
+  .card .title { font-size: 15px; }
+  .list { min-height: 220px !important; padding: 16px !important; }
+}
+
+/* allow vertical scroll on the board and lists (smooth scrolling on iOS) */
+#board { -webkit-overflow-scrolling: touch; }
+.list { touch-action: pan-y; } /* permits vertical scrolling while allowing horizontal drags into columns */
+
+/* ensure ghost/drag helper doesn't block touches */
+.sortable-ghost, .sortable-dragging { pointer-events: none !important; }
+
+/* slightly larger drop zone padding on small screens */
+@media (max-width: 640px) {
+  #board { grid-template-columns: 1fr; gap: 10px; padding: 12px; }
+  .column { min-height: 260px; }
+}
+

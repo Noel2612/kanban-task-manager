@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Kanban — Flask Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/static/style.css">
+  <!-- SortableJS CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>Kanban Board (Flask + SQLite)</h1>
+    <div class="controls">
+      <input id="newTitle" placeholder="New task title" />
+      <button id="addBtn">Add Task</button>
+    </div>
+  </header>
+
+  <main id="board">
+    <!-- columns rendered by JS -->
+  </main>
+
+  <!-- modal -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-content">
+      <h3 id="modalTitle">Edit Task</h3>
+      <label>Title<input id="mTitle"></label>
+      <label>Description<textarea id="mDesc"></textarea></label>
+      <label>Priority
+        <select id="mPriority">
+  <option value="high">High</option>
+  <option value="medium" selected>Medium</option>
+  <option value="low">Low</option>
+</select>
+
+      </label>
+      <label>Tags<input id="mTags" placeholder="comma separated"></label>
+      <label>Due Date<input id="mDue" type="date"></label>
+      <div class="modal-actions">
+        <button id="saveBtn">Save</button>
+        <button id="deleteBtn">Delete</button>
+        <button id="closeBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
