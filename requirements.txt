@@ -1,2 +1,5 @@
-Flask==2.3.3
-Flask-Cors==3.0.10gunicorn
+Flask
+Flask-Cors
+gunicorn
+psycopg2-binary
+python-dotenv
