@@ -203,10 +203,19 @@ def close_connection(exception):
         db.close()
 
 if __name__ == "__main__":
-    # create DB file if missing
+    # create DB file if missing (local)
     if not DB_PATH.exists():
         DB_PATH.touch()
-    # Run one-time setup (create tables and seed sample data) inside app context
+
+    # Run one-time setup (create tables and seed sample data) inside app context,
+    # but don't let errors here kill the process — log them instead.
     with app.app_context():
-        setup_once()
+        try:
+            setup_once()
+        except Exception as e:
+            # print stack trace to stdout so Render logs capture it
+            import traceback
+            print("WARNING: setup_once() failed during startup; continuing so service can run.")
+            traceback.print_exc()
+
     app.run(host="0.0.0.0", port=5000, debug=True)
